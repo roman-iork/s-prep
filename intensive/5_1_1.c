@@ -1,5 +1,6 @@
 //with speed increasing
 #include <stdio.h>
+#include <unistd.h>
 
 int main() {
     int width = 80;
@@ -13,37 +14,40 @@ int main() {
     int ball_dx = 1;
     int ball_dy = 1;
 
-    int speed = 3; // Мяч летит по 2 символа за ход
+    int speed = 4; // set speed of the ball - steps per iteration?
 
     int score1 = 0;
     int score2 = 0;
     int game_over = 0;
 
-    printf("=== ДОБРО ПОЖАЛОВАТЬ В PONG ===\n");
-    printf("Игрок 1: A/Z | Игрок 2: K/M | Пропуск хода: Пробел\n");
-    printf("После ввода клавиши ОБЯЗАТЕЛЬНО нажимайте Enter.\n");
-    printf("Нажмите Enter, чтобы начать игру...");
-    getchar(); 
+    printf("=== Welcome PONG game! ===\n");
+    printf("Player 1: A/Z | Player 2: K/M | Skip: Space\n");
+    printf("ALWAYS press Enter to confirm input.\n");
+    printf("Press Enter to start");
+    getchar(); // this call waits for player to press Enter
 
     while (!game_over) {
-        // Отрисовка поля
+        // first clear screen and move cursor up left corner
+        printf("\033[2J\033[1;1H");
+
+        // draw filed
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (y == 0 || y == height - 1) {
-                    printf("-");
+                    printf("-"); // here we draw upper and lower borders
                 }
                 else if (x == 2 && (y == paddle1_y - 1 || y == paddle1_y || y == paddle1_y + 1)) {
-                    printf("|");
+                    printf("|"); // here we draw left paddle
                 }
                 else if (x == width - 3 && (y == paddle2_y - 1 || y == paddle2_y || y == paddle2_y + 1)) {
-                    printf("|");
+                    printf("|"); // here we draw right paddle
                 }
                 else if (x == ball_x && y == ball_y) {
-                    printf("*");
+                    printf("*"); // here we draw ball
                 }
                 else if (y == 2 && x == (width / 2) - 3) {
-                    printf("%02d", score1);
-                    x++;
+                    printf("%02d", score1);  //field width 2 digits and pad with leading zeros
+                    x++; // shift x forward since score takes width 2
                 }
                 else if (y == 2 && x == (width / 2) + 2) {
                     printf("%02d", score2);
@@ -56,14 +60,19 @@ int main() {
                     printf("|");
                 }
                 else {
-                    printf(" ");
+                    printf(" "); // fill empty field with spaces
                 }
             }
             printf("\n");
+
+            // it is temp to see that picture is written line by line (shell be del later with #include <unistd.h>)
+            //usleep(80000);
         }
 
-        printf("Ваш ход (A/Z, K/M или Пробел + Enter): ");
+        printf("Press A/Z, K/M or Space + Enter: ");
         
+
+        // start from here
         char input_char;
         int valid_input = 0;
 
