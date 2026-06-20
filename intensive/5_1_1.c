@@ -1,8 +1,11 @@
 //with speed increasing
 #include <stdio.h>
-#include <unistd.h>
+#include <unistd.h> // temp, to be dell later
+#include <stdlib.h> // Необходима для функции atoi
 
-int main() {
+
+int main(int arg, char *argv[]) {
+    if (arg != 2) return 0;
     int width = 80;
     int height = 25;
 
@@ -14,7 +17,8 @@ int main() {
     int ball_dx = 1;
     int ball_dy = 1;
 
-    int speed = 4; // set speed of the ball - steps per iteration?
+    //int speed = 3; // set speed of the ball - steps per iteration?
+    int speed = atoi(argv[1]);
 
     int score1 = 0;
     int score2 = 0;
@@ -30,7 +34,7 @@ int main() {
         // first clear screen and move cursor up left corner
         printf("\033[2J\033[1;1H");
 
-        // draw filed
+        // draw field
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (y == 0 || y == height - 1) {
@@ -70,21 +74,23 @@ int main() {
         }
 
         printf("Press A/Z, K/M or Space + Enter: ");
-        
 
-        // start from here
-        char input_char;
-        int valid_input = 0;
 
+        // here happens input reading and calculation
+        char input_char; // main container for the read character
+        int valid_input = 0; // at first any reading consider not valid
+
+        // run this cycle until valid char was entered
         while (!valid_input) {
-            // Читаем символ через getchar, чтобы поймать пробел
+            // read input as char
             input_char = getchar();
 
-            // Если считался символ перевода строки '\n' от прошлого ввода, пропускаем его
-            if (input_char == '\n') {
-                continue;
+            // if Enter was pressed several times consider it to be one press logically and keep reading
+            if (input_char == '\n') { // uncomment continue to move only one setp at a time
+            //    continue;
             }
 
+            // moving of paddles or skipping
             if (input_char == 'a' || input_char == 'A') {
                 if (paddle1_y > 2) paddle1_y--;
                 valid_input = 1;
@@ -97,20 +103,21 @@ int main() {
             } else if (input_char == 'm' || input_char == 'M') {
                 if (paddle2_y < height - 3) paddle2_y++;
                 valid_input = 1;
-            } else if (input_char == ' ') {
-                // Игрок нажал пробел. Ракетки не двигаются, флаг становится валидным
-                valid_input = 1; 
+            } else if (input_char == ' ' || '\n') {
+                // Space was pressed which is valid button, change value to 1(true)
+                valid_input = 1;
             } else {
-                printf("Неверный ввод! Нажмите A/Z, K/M или Пробел, затем Enter: ");
-                // Очищаем буфер от остатков ввода (например, от нажатого Enter)
-                while (getchar() != '\n'); 
+                printf("Invalid input! Press A/Z, K/M or Space + Enter: ");
+                // if more then one valid or invalid char was entered read them all till Enter is pressed
+                while (getchar() != '\n');
             }
         }
 
+        // you are here
         // Очистка входного потока от нажатого Enter, чтобы он не мешал на следующем ходу
-        if (input_char != ' ') {
-            while (getchar() != '\n');
-        }
+        //if (input_char != ' ') {
+           // while (getchar() != '\n');
+        //}
 
         // Движение мяча (физика)
         for (int step = 0; step < speed; step++) {
@@ -161,6 +168,9 @@ int main() {
             printf("===================================\n");
             game_over = 1;
         }
+        
+        // redraw scores
+        //drawScore(score1, score2, width);
     }
 
     return 0;
